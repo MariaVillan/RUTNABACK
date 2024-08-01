@@ -1,15 +1,23 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const conexion = require('../config/database');
 
-const Ruta = conexion.define('Rutas', {
+const Ruta = conexion.define('Ruta', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     destino: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     precio: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-    },
+        type: DataTypes.FLOAT,
+        allowNull: false
+    }
+}, {
+    tableName: 'rutas',
+    timestamps: false 
 });
 
 module.exports = Ruta;

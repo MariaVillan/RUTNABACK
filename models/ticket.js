@@ -1,31 +1,39 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const conexion = require('../config/database');
 
-const Boleto = conexion.define('Boletos', {
-    usuarioId: {
-        type: Sequelize.INTEGER,
+const Boleto = conexion.define('Boleto', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    matricula: {
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
-            model: 'Usuarios', // Nombre de la tabla debe coincidir
-            key: 'id',
+            model: 'Alumnos', // Nombre de la tabla debe coincidir
+            key: 'matricula',
         },
     },
-    rutaId: {
-        type: Sequelize.INTEGER,
+    destino: {
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
-            model: 'Rutas',
-            key: 'id',
+            model: 'Rutas', // Nombre de la tabla debe coincidir
+            key: 'destino',
         },
     },
     codigoQR: {
-        type: Sequelize.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
     },
     expiracion: {
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
         allowNull: false,
-    },
+    }
+}, {
+    tableName: 'boletos',
+    timestamps: false,
 });
 
 module.exports = Boleto;

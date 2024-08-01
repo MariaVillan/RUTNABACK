@@ -2,13 +2,13 @@ const { Sequelize } = require('sequelize');
 const conexion = require('../config/database');
 const bcrypt = require('bcryptjs');
 
-const Usuario = conexion.define('Usuarios', {
+const Alumno = conexion.define('Alumnos', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    nombre_usuario: {
+    matricula: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
@@ -17,18 +17,18 @@ const Usuario = conexion.define('Usuarios', {
         type: Sequelize.STRING,
         allowNull: false,
     },
-    rol: {
-        type: Sequelize.STRING,
+    saldo: {
+        type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
     }
 });
 
-Usuario.beforeCreate(async (usuario) => {
-    usuario.pass = await bcrypt.hash(usuario.pass, 10);
+Alumno.beforeCreate(async (alumno) => {
+    alumno.pass = await bcrypt.hash(alumno.pass, 10);
 });
 
-Usuario.prototype.compararPass = async function (pass) {
+Alumno.prototype.compararPass = async function (pass) {
     return bcrypt.compare(pass, this.pass);
 };
 
-module.exports = Usuario;
+module.exports = Alumno;

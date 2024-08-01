@@ -1,43 +1,59 @@
-const Usuario = require('../models/user');
+const Alumno = require('../models/alumno');
 const Ruta = require('../models/route');
 const Boleto = require('../models/ticket');
 const QRCode = require('qrcode');
 const moment = require('moment');
-const { Op } = require('sequelize'); // Importar Op
-// Comparar boletos
+const { Op } = require('sequelize');
+
+// Comprar boleto
 exports.comprarBoleto = async (req, res) => {
     try {
-        const { usuarioId, rutaId } = req.body;
-        const usuario = await Usuario.findByPk(usuarioId);
-        const ruta = await Ruta.findByPk(rutaId);
-        if (!usuario || !ruta) return res.status(404).json({ error: 'Usuario o ruta no encontrados' });
-        if (usuario.saldo < ruta.precio) return res.status(400).json({ error: 'Saldo insuficiente' });
+        const { matricula, destino } = req.body;
 
-        usuario.saldo -= ruta.precio;
-        await usuario.save();
+        // Buscar alumno por matrícula
+        const alumno = await Alumno.findOne({ where: { matricula } });
+        if (!alumno) return res.status(404).json({ error: 'Alumno no encontrado' });
 
-        const codigoQR = await QRCode.toDataURL(`Boleto: ${usuarioId}-${rutaId}-${Date.now()}`);
+        // Buscar ruta por destino
+        const ruta = await Ruta.findOne({ where: { destino } });
+        if (!ruta) return res.status(404).json({ error: 'Ruta no encontrada' });
+
+        // Verificar saldo del alumno
+        if (alumno.saldo < ruta.precio) return res.status(400).json({ error: 'Saldo insuficiente' });
+
+        // Actualizar saldo del alumno
+        alumno.saldo -= ruta.precio;
+        await alumno.save();
+
+        // Generar código QR
+        const codigoQR = await QRCode.toDataURL(`Boleto: ${alumno.matricula}-${ruta.destino}-${Date.now()}`);
         const expiracion = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-        const boleto = await Boleto.create({ usuarioId, rutaId, codigoQR, expiracion });
+        // Crear boleto
+        const boleto = await Boleto.create({ matricula: alumno.matricula, destino: ruta.destino, codigoQR, expiracion });
+
         res.json(boleto);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-//Listar boletos por id
+// Listar boletos por matrícula
 exports.listarBoletos = async (req, res) => {
-    const { usuarioId } = req.params;
-    
+    const { matricula } = req.params;
+
     try {
+        // Obtener alumno por matrícula
+        const alumno = await Alumno.findOne({ where: { matricula } });
+        if (!alumno) return res.status(404).json({ error: 'Alumno no encontrado' });
+
         // Obtener la fecha y hora actual
         const ahora = moment().toDate();
 
-        // Buscar boletos no expirados para el usuario específico
+        // Buscar boletos no expirados para el alumno específico
         const boletos = await Boleto.findAll({
             where: {
-                usuarioId: usuarioId,
+                matricula: alumno.matricula,
                 expiracion: {
                     [Op.gt]: ahora // [Op.gt] significa "mayor que"
                 }
