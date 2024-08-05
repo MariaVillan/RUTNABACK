@@ -8,7 +8,7 @@ const Usuario = conexion.define('Usuarios', {
         autoIncrement: true,
         primaryKey: true
     },
-    nombre_usuario: {
+    usuario: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
@@ -20,6 +20,11 @@ const Usuario = conexion.define('Usuarios', {
     rol: {
         type: Sequelize.STRING,
         allowNull: false,
+    },
+    saldo: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,  // Permitir que saldo sea null
+        defaultValue: 0.00  // Valor predeterminado
     }
 });
 
@@ -32,3 +37,4 @@ Usuario.prototype.compararPass = async function (pass) {
 };
 
 module.exports = Usuario;
+

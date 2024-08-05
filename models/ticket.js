@@ -11,8 +11,8 @@ const Boleto = conexion.define('Boleto', {
         type: DataTypes.STRING,
         allowNull: false,
         references: {
-            model: 'Alumnos', // Nombre de la tabla debe coincidir
-            key: 'matricula',
+            model: 'Usuarios', // Nombre de la tabla debe coincidir
+            key: 'usuario', // El campo referenciado debe coincidir
         },
     },
     destino: {
@@ -20,7 +20,7 @@ const Boleto = conexion.define('Boleto', {
         allowNull: false,
         references: {
             model: 'Rutas', // Nombre de la tabla debe coincidir
-            key: 'destino',
+            key: 'destino', // El campo referenciado debe coincidir
         },
     },
     codigoQR: {

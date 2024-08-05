@@ -1,18 +1,19 @@
 const Usuario = require('../models/user');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs');
 
 // Registrar usuario
 exports.registrarUsuario = async (req, res) => {
     try {
-        const { nombre_usuario, pass, rol } = req.body;
-        const usuario = await Usuario.create({ nombre_usuario, pass, rol });
-        res.status(201).json(usuario);
+        const { usuario, pass, rol, saldo } = req.body;
+        const nuevoUsuario = await Usuario.create({ usuario, pass, rol, saldo });
+        res.status(201).json(nuevoUsuario);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-//Obtener todo
+
+// Obtener todos los usuarios
 exports.obtenerUsuarios = async (req, res) => {
     try {
         const usuarios = await Usuario.findAll();
@@ -21,28 +22,30 @@ exports.obtenerUsuarios = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 // Actualizar usuario por ID
 exports.actualizarUsuario = async (req, res) => {
     try {
         const { id } = req.params; 
-        const { nombre_usuario, pass, rol } = req.body;
+        const { usuario, pass, rol, saldo } = req.body;
 
-        const usuario = await Usuario.findByPk(id);
-        if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+        const usuarioExistente = await Usuario.findByPk(id);
+        if (!usuarioExistente) return res.status(404).json({ error: 'Usuario no encontrado' });
 
-        if (nombre_usuario) usuario.nombre_usuario = nombre_usuario;
-        if (pass) usuario.pass = await bcrypt.hash(pass, 10);
-        if (rol) usuario.rol = rol;
+        if (usuario) usuarioExistente.usuario = usuario;
+        if (pass) usuarioExistente.pass = await bcrypt.hash(pass, 10);
+        if (rol) usuarioExistente.rol = rol;
+        if (saldo !== undefined) usuarioExistente.saldo = saldo;
 
-        await usuario.save();
+        await usuarioExistente.save();
 
-        res.json(usuario);
+        res.json(usuarioExistente);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-//Eliminar
+// Eliminar usuario
 exports.eliminarUsuario = async (req, res) => {
     try {
         const { id } = req.params; 
@@ -61,13 +64,41 @@ exports.eliminarUsuario = async (req, res) => {
 // Login
 exports.login = async (req, res) => {
     try {
-        const { nombre_usuario, pass } = req.body;
-        const usuario = await Usuario.findOne({ where: { nombre_usuario } });
-        if (!usuario || !(await usuario.compararPass(pass))) {
+        const { usuario, pass } = req.body;
+        const user = await Usuario.findOne({ where: { usuario } });
+        if (!user || !(await user.compararPass(pass))) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
-        const token = jwt.sign({ usuarioId: usuario.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ usuarioId: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Cargar saldo para usuarios tipo alumno
+// Cargar saldo para usuarios tipo alumno
+exports.cargarSaldo = async (req, res) => {
+    try {
+        const { usuario, cantidad } = req.body;
+        const alumno = await Usuario.findOne({ where: { usuario, rol: 'alumno' } });
+        if (!alumno) {
+            return res.status(404).json({ error: 'Alumno no encontrado' });
+        }
+
+        // Convertir cantidad a número
+        const cantidadDecimal = parseFloat(cantidad);
+        if (isNaN(cantidadDecimal)) {
+            return res.status(400).json({ error: 'Cantidad inválida' });
+        }
+
+        // Incrementar el saldo
+        alumno.saldo = parseFloat(alumno.saldo) + cantidadDecimal;
+        await alumno.save();
+
+        // Retornar el usuario actualizado sin el campo de pass
+        const { pass: _, ...response } = alumno.toJSON();
+        res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
