@@ -1,15 +1,10 @@
 require('dotenv').config(); // Carga las variables de entorno desde .env
 
-console.log('MYSQLDATABASE:', process.env.MYSQLDATABASE);
-console.log('MYSQLUSER:', process.env.MYSQLUSER);
-console.log('MYSQLPASSWORD:', process.env.MYSQLPASSWORD);
-console.log('MYSQLHOST:', process.env.MYSQLHOST);
-console.log('MYSQLPORT:', process.env.MYSQLPORT);
-
 const Sequelize = require('sequelize');
 
+// Reemplaza `process.env.MYSQLHOST` con la dirección IP obtenida
 const conexion = new Sequelize(process.env.MYSQLDATABASE, process.env.MYSQLUSER, process.env.MYSQLPASSWORD, {
-  host: process.env.MYSQLHOST,
+  host: '123.456.789.012', // Reemplaza esto con la dirección IP de tu base de datos
   port: process.env.MYSQLPORT,
   dialect: 'mysql',
   define: {
