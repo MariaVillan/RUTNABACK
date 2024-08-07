@@ -21,22 +21,21 @@ exports.obtenerRutas = async (req, res) => {
     }
 };
 
-// Actualizar ruta por destino
+// Actualizar ruta por ID
 exports.actualizarRuta = async (req, res) => {
     try {
-        const { destino } = req.params; // Obtener destino de los parámetros de la URL
-        const { nuevoDestino, precio } = req.body; // Obtener datos de actualización del cuerpo de la solicitud
+        const { id } = req.params; // Obtener ID de los parámetros de la URL
+        const { precio } = req.body; // Obtener precio del cuerpo de la solicitud
 
-        // Buscar la ruta por destino
-        const ruta = await Ruta.findOne({ where: { destino } });
+        // Buscar la ruta por ID
+        const ruta = await Ruta.findByPk(id);
 
         if (!ruta) {
             return res.status(404).json({ error: 'Ruta no encontrada' });
         }
 
-        // Actualizar la ruta
-        if (nuevoDestino) ruta.destino = nuevoDestino; // Actualizar el destino si se proporciona
-        if (precio !== undefined) ruta.precio = precio; // Actualizar el precio si se proporciona
+        // Actualizar el precio si se proporciona
+        if (precio !== undefined) ruta.precio = precio;
         await ruta.save();
 
         res.status(200).json(ruta);
