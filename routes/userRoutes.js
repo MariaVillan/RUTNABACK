@@ -4,7 +4,8 @@ const userController = require('../controllers/userController');
 
 // Rutas de usuarios
 router.post('/registrarUsuario', userController.registrarUsuario);
-router.get('/obtenerUsuarios', userController.obtenerUsuarios);
+router.get('/obtenerAdmins', userController.obtenerAdmins);
+router.get('/obtenerAlumnos', userController.obtenerAlumnos);
 router.put('/actualizarUsuario/:id', userController.actualizarUsuario);
 router.delete('/eliminarUsuario/:id', userController.eliminarUsuario);
 router.post('/login', userController.login);
