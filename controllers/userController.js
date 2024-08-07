@@ -41,6 +41,7 @@ exports.obtenerAlumnos = async (req, res) => {
     }
 };
 
+
 // Actualizar usuario por ID
 exports.actualizarUsuario = async (req, res) => {
     try {
