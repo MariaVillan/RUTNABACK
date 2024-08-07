@@ -70,13 +70,12 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
         const token = jwt.sign({ usuarioId: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
+        res.json({ token, rol: user.rol }); // Incluye el rol en la respuesta
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-// Cargar saldo para usuarios tipo alumno
 // Cargar saldo para usuarios tipo alumno
 exports.cargarSaldo = async (req, res) => {
     try {
