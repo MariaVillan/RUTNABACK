@@ -13,10 +13,28 @@ exports.registrarUsuario = async (req, res) => {
     }
 };
 
-// Obtener todos los usuarios
-exports.obtenerUsuarios = async (req, res) => {
+// Obtener choferes y administradores
+exports.obtenerAdmins = async (req, res) => {
     try {
-        const usuarios = await Usuario.findAll();
+        const usuarios = await Usuario.findAll({
+            where: {
+                rol: ['chofer', 'admin']
+            }
+        });
+        res.json(usuarios);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Obtener alumnos
+exports.obtenerAlumnos = async (req, res) => {
+    try {
+        const usuarios = await Usuario.findAll({
+            where: {
+                rol: 'alumno'
+            }
+        });
         res.json(usuarios);
     } catch (error) {
         res.status(500).json({ error: error.message });
