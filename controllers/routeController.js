@@ -33,32 +33,24 @@ exports.obtenerRutas = async (req, res) => {
 // Actualizar ruta por ID
 exports.actualizarRuta = async (req, res) => {
     try {
-        const { id } = req.params; // Obtener ID de los parámetros de la URL
-        const { precio } = req.body; // Obtener precio del cuerpo de la solicitud
+        const { id } = req.params;
+        const { destino, precio } = req.body;
 
-        // Buscar la ruta por ID
         const ruta = await Ruta.findByPk(id);
 
         if (!ruta) {
             return res.status(404).json({ error: 'Ruta no encontrada' });
         }
 
-        // Validar el precio
-        if (precio === undefined || isNaN(precio)) {
-            return res.status(400).json({ error: 'Precio inválido' });
-        }
-
-        // Actualizar el precio
-        ruta.precio = precio;
+        ruta.destino = destino || ruta.destino;
+        ruta.precio = precio || ruta.precio;
         await ruta.save();
 
-        res.status(200).json({ message: 'Ruta actualizada correctamente', ruta });
+        res.status(200).json(ruta);
     } catch (error) {
-        console.error('Error al actualizar la ruta:', error.message);
-        res.status(500).json({ error: 'Error al actualizar la ruta' });
+        res.status(500).json({ error: error.message });
     }
 };
-
 
 // Eliminar ruta
 exports.eliminarRuta = async (req, res) => {
