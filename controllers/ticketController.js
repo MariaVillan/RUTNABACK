@@ -10,28 +10,22 @@ exports.comprarBoleto = async (req, res) => {
     try {
         const { usuario, destino } = req.body;
 
-        // Buscar usuario por nombre de usuario
         const usuarioEncontrado = await Usuario.findOne({ where: { usuario } });
         if (!usuarioEncontrado) return res.status(404).json({ error: 'Usuario no encontrado' });
 
-        // Buscar ruta por destino
         const ruta = await Ruta.findOne({ where: { destino } });
         if (!ruta) return res.status(404).json({ error: 'Ruta no encontrada' });
 
-        // Verificar saldo del usuario
         if (usuarioEncontrado.saldo < ruta.precio) return res.status(400).json({ error: 'Saldo insuficiente' });
 
-        // Actualizar saldo del usuario
         usuarioEncontrado.saldo -= ruta.precio;
         await usuarioEncontrado.save();
 
-        // Generar código QR
         const codigoQR = await QRCode.toDataURL(`Boleto: ${usuarioEncontrado.usuario}-${ruta.destino}-${Date.now()}`);
         const expiracion = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-        // Crear boleto
         const boleto = await Boleto.create({
-            matricula: usuarioEncontrado.usuario, // Asignar el nombre de usuario al campo matricula
+            matricula: usuarioEncontrado.usuario,
             destino: ruta.destino, 
             codigoQR, 
             expiracion
@@ -48,24 +42,20 @@ exports.listarBoletos = async (req, res) => {
     const { usuario } = req.params;
 
     try {
-        // Obtener usuario por nombre de usuario
         const usuarioEncontrado = await Usuario.findOne({ where: { usuario } });
         if (!usuarioEncontrado) return res.status(404).json({ error: 'Usuario no encontrado' });
 
-        // Obtener la fecha y hora actual
         const ahora = moment().toDate();
 
-        // Buscar boletos no expirados para el usuario específico
         const boletos = await Boleto.findAll({
             where: {
-                matricula: usuarioEncontrado.usuario, // Filtrar por nombre de usuario
+                matricula: usuarioEncontrado.usuario, 
                 expiracion: {
-                    [Op.gt]: ahora // [Op.gt] significa "mayor que"
+                    [Op.gt]: ahora 
                 }
             }
         });
 
-        // Enviar respuesta
         res.status(200).json(boletos);
     } catch (error) {
         console.error('Error al listar boletos:', error);
