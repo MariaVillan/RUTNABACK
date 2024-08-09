@@ -5,14 +5,12 @@ exports.agregarRuta = async (req, res) => {
     try {
         const { destino, precio } = req.body;
 
-        // Verificar si ya existe una ruta con el mismo destino
         const rutaExistente = await Ruta.findOne({ where: { destino } });
 
         if (rutaExistente) {
             return res.status(400).json({ error: 'Ya existe una ruta con ese destino' });
         }
 
-        // Crear la nueva ruta
         const nuevaRuta = await Ruta.create({ destino, precio });
         res.status(201).json(nuevaRuta);
     } catch (error) {
