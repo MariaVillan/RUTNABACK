@@ -53,7 +53,7 @@ exports.obtenerRutas = async (req, res) => {
 exports.actualizarRuta = async (req, res) => {
     try {
         const { id } = req.params;
-        const { destino, precio } = req.body;
+        const { precio } = req.body;
         const ruta = await Ruta.findByPk(id);
 
         if (!ruta) {
@@ -65,13 +65,12 @@ exports.actualizarRuta = async (req, res) => {
             return res.status(404).json({ error: 'Ruta no encontrada' });
         }
 
-        ruta.destino = destino || ruta.destino;
         ruta.precio = precio || ruta.precio;
         await ruta.save();
 
         await Log.create({
             accion: 'Actualizar Ruta',
-            detalle: `Se actualizó la ruta ${destino}. Nuevo precio: ${ruta.precio}.`,
+            detalle: `Se actualizó la ruta con destino a ${ruta.destino}. Nuevo precio: ${ruta.precio}.`,
             fecha: new Date()
         });
 
@@ -85,7 +84,6 @@ exports.actualizarRuta = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
 // Eliminar ruta por destino
 exports.eliminarRuta = async (req, res) => {
     try {
