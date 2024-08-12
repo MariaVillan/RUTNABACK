@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 app.use('/user', userRoutes);
-app.use('/rutas', authenticateToken, routeRoutes);
+app.use('/rutas', routeRoutes);
 app.use('/boletos', authenticateToken, ticketRoutes);
 
 
