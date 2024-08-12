@@ -5,8 +5,8 @@ const authenticateToken = require('../middleware/auth');
 
 // Rutas de usuarios
 router.post('/registrarUsuario', userController.registrarUsuario);
-router.get('/obtenerAdmins', authenticateToken, userController.obtenerAdmins);
-router.get('/obtenerAlumnos', authenticateToken, userController.obtenerAlumnos);
+router.get('/obtenerAdmins', userController.obtenerAdmins);
+router.get('/obtenerAlumnos', userController.obtenerAlumnos);
 router.put('/actualizarUsuario/:id', authenticateToken, userController.actualizarUsuario);
 router.delete('/eliminarUsuario/:id', authenticateToken, userController.eliminarUsuario);
 router.post('/login', userController.login);
