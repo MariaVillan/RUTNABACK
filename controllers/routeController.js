@@ -38,7 +38,6 @@ exports.agregarRuta = async (req, res) => {
     }
 };
 
-
 // Obtener rutas
 exports.obtenerRutas = async (req, res) => {
     try {
@@ -58,31 +57,64 @@ exports.actualizarRuta = async (req, res) => {
         const ruta = await Ruta.findByPk(id);
 
         if (!ruta) {
-            await Log.create({ accion: 'Actualizar Ruta', detalle: 'Ruta no encontrada', fecha: new Date(), usuario: 'usuarioEjemplo' });
+            await Log.create({
+                accion: 'Actualizar Ruta',
+                detalle: `Ruta con ID ${id} no encontrada`,
+                fecha: new Date()
+            });
             return res.status(404).json({ error: 'Ruta no encontrada' });
         }
 
+        const destinoAnterior = ruta.destino;
         ruta.destino = destino || ruta.destino;
         ruta.precio = precio || ruta.precio;
         await ruta.save();
-        await Log.create({ accion: 'Actualizar Ruta', detalle: 'Ruta actualizada exitosamente', fecha: new Date(), usuario: 'usuarioEjemplo' });
+
+        await Log.create({
+            accion: 'Actualizar Ruta',
+            detalle: `Se actualizó la ruta con destino a ${destinoAnterior}. Nuevo destino: ${ruta.destino}.`,
+            fecha: new Date()
+        });
 
         res.status(200).json(ruta);
     } catch (error) {
-        await Log.create({ accion: 'Actualizar Ruta', detalle: error.message, fecha: new Date(), usuario: 'usuarioEjemplo' });
+        await Log.create({
+            accion: 'Actualizar Ruta',
+            detalle: `Error al actualizar ruta con ID ${id}: ${error.message}`,
+            fecha: new Date()
+        });
         res.status(500).json({ error: error.message });
     }
 };
 
-// Eliminar ruta
+// Eliminar ruta por destino
 exports.eliminarRuta = async (req, res) => {
     try {
-        const { id } = req.params;
-        await Ruta.destroy({ where: { id } });
-        await Log.create({ accion: 'Eliminar Ruta', detalle: 'Ruta eliminada exitosamente', fecha: new Date(), usuario: 'usuarioEjemplo' });
+        const { destino } = req.params;
+        const ruta = await Ruta.findOne({ where: { destino } });
+
+        if (!ruta) {
+            await Log.create({
+                accion: 'Eliminar Ruta',
+                detalle: `Ruta con destino ${destino} no encontrada`,
+                fecha: new Date()
+            });
+            return res.status(404).json({ error: 'Ruta no encontrada' });
+        }
+
+        await Ruta.destroy({ where: { destino } });
+        await Log.create({
+            accion: 'Eliminar Ruta',
+            detalle: `Ruta con destino ${destino} eliminada exitosamente`,
+            fecha: new Date()
+        });
         res.status(204).end();
     } catch (error) {
-        await Log.create({ accion: 'Eliminar Ruta', detalle: error.message, fecha: new Date(), usuario: 'usuarioEjemplo' });
+        await Log.create({
+            accion: 'Eliminar Ruta',
+            detalle: `Error al eliminar ruta con destino ${destino}: ${error.message}`,
+            fecha: new Date()
+        });
         res.status(500).json({ error: error.message });
     }
 };
