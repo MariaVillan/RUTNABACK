@@ -65,14 +65,13 @@ exports.actualizarRuta = async (req, res) => {
             return res.status(404).json({ error: 'Ruta no encontrada' });
         }
 
-        const destinoAnterior = ruta.destino;
         ruta.destino = destino || ruta.destino;
         ruta.precio = precio || ruta.precio;
         await ruta.save();
 
         await Log.create({
             accion: 'Actualizar Ruta',
-            detalle: `Se actualizó la ruta con destino a ${destinoAnterior}. Nuevo destino: ${ruta.destino}.`,
+            detalle: `Se actualizó la ruta ${destino}. Nuevo precio: ${ruta.precio}.`,
             fecha: new Date()
         });
 
