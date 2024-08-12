@@ -122,3 +122,17 @@ exports.cargarSaldo = async (req, res) => {
     }
 };
 
+// Obtener logs
+exports.logs = async (req, res) => {
+    try {
+        const logs = await Log.findAll({
+            attributes: ['accion', 'detalle', 'fecha'] 
+        });
+
+        res.status(200).json(logs);
+    } catch (error) {
+        console.error('Error al obtener los registros:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
