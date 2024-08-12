@@ -3,7 +3,7 @@ const Log = require('../models/log');
 
 // Agregar ruta
 exports.agregarRuta = async (req, res) => {
-    const usuario = req.user?.nombre || 'Desconocido'; // Asegúrate de que `req.user` contenga el nombre del usuario
+    const usuario = req.user?.nombre || 'Desconocido'; // Obtén el nombre del usuario desde `req.user`
 
     try {
         const { destino, precio } = req.body;
