@@ -151,7 +151,7 @@ exports.eliminarUsuario = async (req, res) => {
     }
 };
 
-// Login (sin registro en logs)
+// Login
 exports.login = async (req, res) => {
     try {
         const { usuario, pass } = req.body;
