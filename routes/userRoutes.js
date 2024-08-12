@@ -11,7 +11,7 @@ router.put('/actualizarUsuario/:id', authenticateToken, userController.actualiza
 router.delete('/eliminarUsuario/:id', authenticateToken, userController.eliminarUsuario);
 router.post('/login', userController.login);
 router.post('/cargarSaldo', authenticateToken, userController.cargarSaldo);
-router.get('/logs', authenticateToken, userController.logs);
+router.get('/logs', userController.obtenerLogs);
 
 
 module.exports = router;

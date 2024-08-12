@@ -123,7 +123,7 @@ exports.cargarSaldo = async (req, res) => {
 };
 
 // Obtener logs
-exports.logs = async (req, res) => {
+exports.obtenerLogs = async (req, res) => {
     try {
         const logs = await Log.findAll({
             attributes: ['accion', 'detalle', 'fecha'] 
