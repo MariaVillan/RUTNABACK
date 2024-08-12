@@ -3,23 +3,41 @@ const Log = require('../models/log');
 
 // Agregar ruta
 exports.agregarRuta = async (req, res) => {
+    const usuario = req.user?.nombre || 'Desconocido'; // Asegúrate de que `req.user` contenga el nombre del usuario
+
     try {
         const { destino, precio } = req.body;
         const rutaExistente = await Ruta.findOne({ where: { destino } });
 
         if (rutaExistente) {
-            await Log.create({ accion: 'Agregar Ruta', detalle: 'Ya existe una ruta con ese destino', fecha: new Date(), usuario: 'usuarioEjemplo' });
+            await Log.create({
+                accion: 'Agregar Ruta',
+                detalle: `Intento fallido de agregar la ruta con destino a ${destino}. La ruta ya existe.`,
+                fecha: new Date(),
+                usuario: usuario
+            });
             return res.status(400).json({ error: 'Ya existe una ruta con ese destino' });
         }
 
         const nuevaRuta = await Ruta.create({ destino, precio });
-        await Log.create({ accion: 'Agregar Ruta', detalle: 'Ruta agregada exitosamente', fecha: new Date(), usuario: 'usuarioEjemplo' });
+        await Log.create({
+            accion: 'Agregar Ruta',
+            detalle: `Se agregó una ruta con destino a ${destino} y precio ${precio}.`,
+            fecha: new Date(),
+            usuario: usuario
+        });
         res.status(201).json(nuevaRuta);
     } catch (error) {
-        await Log.create({ accion: 'Agregar Ruta', detalle: error.message, fecha: new Date(), usuario: 'usuarioEjemplo' });
+        await Log.create({
+            accion: 'Agregar Ruta',
+            detalle: `Error al agregar ruta: ${error.message}`,
+            fecha: new Date(),
+            usuario: usuario
+        });
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Obtener rutas
 exports.obtenerRutas = async (req, res) => {
