@@ -49,9 +49,6 @@ exports.obtenerRutas = async (req, res) => {
     }
 };
 
-const Ruta = require('../models/route');
-const Log = require('../models/log');
-
 // Actualizar ruta por ID
 exports.actualizarRuta = async (req, res) => {
     try {
