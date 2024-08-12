@@ -212,3 +212,12 @@ exports.cargarSaldo = async (req, res) => {
     }
 };
 
+//Logs
+exports.obtenerLogs = async (req, res) => {
+    try {
+        const logs = await Log.findAll(); 
+        res.status(200).json(logs); 
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
