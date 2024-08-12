@@ -89,36 +89,13 @@ exports.actualizarRuta = async (req, res) => {
     }
 };
 
-// Eliminar ruta por ID
+// Eliminar ruta
 exports.eliminarRuta = async (req, res) => {
     try {
         const { id } = req.params;
-
-        const ruta = await Ruta.findByPk(id);
-        if (!ruta) {
-            await Log.create({
-                accion: 'Eliminar Ruta',
-                detalle: `Ruta con ID ${id} no encontrada`,
-                fecha: new Date()
-            });
-            return res.status(404).json({ error: 'Ruta no encontrada' });
-        }
-
         await Ruta.destroy({ where: { id } });
-
-        await Log.create({
-            accion: 'Eliminar Ruta',
-            detalle: `Ruta con ID ${id} eliminada exitosamente`,
-            fecha: new Date()
-        });
         res.status(204).end();
     } catch (error) {
-        await Log.create({
-            accion: 'Eliminar Ruta',
-            detalle: `Error al eliminar ruta con ID ${id}: ${error.message}`,
-            fecha: new Date()
-        });
-
         res.status(500).json({ error: error.message });
     }
 };
