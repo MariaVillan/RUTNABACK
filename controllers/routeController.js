@@ -49,6 +49,9 @@ exports.obtenerRutas = async (req, res) => {
     }
 };
 
+const Ruta = require('../models/route');
+const Log = require('../models/log');
+
 // Actualizar ruta por ID
 exports.actualizarRuta = async (req, res) => {
     try {
@@ -64,13 +67,14 @@ exports.actualizarRuta = async (req, res) => {
             });
             return res.status(404).json({ error: 'Ruta no encontrada' });
         }
+        const destino = ruta.destino;
 
         ruta.precio = precio || ruta.precio;
         await ruta.save();
 
         await Log.create({
             accion: 'Actualizar Ruta',
-            detalle: `Se actualizó la ruta con destino a ${ruta.destino}. Nuevo precio: ${ruta.precio}.`,
+            detalle: `Se actualizó la ruta con destino a ${destino}. Nuevo precio: ${ruta.precio}.`,
             fecha: new Date()
         });
 
@@ -84,6 +88,8 @@ exports.actualizarRuta = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
 // Eliminar ruta por destino
 exports.eliminarRuta = async (req, res) => {
     try {
