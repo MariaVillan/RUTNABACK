@@ -1,5 +1,6 @@
 const express = require('express');
 const sequelize = require('./config/database');
+const authenticateToken = require('./middleware/auth');
 port = process.env.PORT || 4000
 
 const userRoutes = require('./routes/userRoutes');
@@ -10,8 +11,8 @@ const app = express();
 app.use(express.json());
 
 app.use('/user', userRoutes);
-app.use('/rutas', routeRoutes);
-app.use('/boletos', ticketRoutes);
+app.use('/rutas', authenticateToken, routeRoutes);
+app.use('/boletos', authenticateToken, ticketRoutes);
 
 
 
@@ -21,5 +22,4 @@ app.listen(port, () => {
 });
 
 const conexion = require('./config/database'); 
-
 

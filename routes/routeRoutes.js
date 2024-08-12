@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const routeController = require('../controllers/routeController'); 
+const authenticateToken = require('../middleware/auth');
 
-router.post('/agregar', routeController.agregarRuta);
-router.get('/', routeController.obtenerRutas); 
-router.put('/actualizar/:id', routeController.actualizarRuta);
-router.delete('/eliminar/:id', routeController.eliminarRuta);
+router.post('/agregar', authenticateToken, routeController.agregarRuta);
+router.get('/', authenticateToken, routeController.obtenerRutas); 
+router.put('/actualizar/:id', authenticateToken, routeController.actualizarRuta);
+router.delete('/eliminar/:id', authenticateToken, routeController.eliminarRuta);
 
 module.exports = router;
 
