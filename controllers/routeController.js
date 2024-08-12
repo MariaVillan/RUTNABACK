@@ -3,6 +3,8 @@ const Log = require('../models/log');
 
 // Agregar ruta
 exports.agregarRuta = async (req, res) => {
+    const usuario = req.user?.nombre || 'Desconocido'; // Obtén el nombre del usuario desde `req.user`
+
     try {
         const { destino, precio } = req.body;
         const rutaExistente = await Ruta.findOne({ where: { destino } });
@@ -11,7 +13,8 @@ exports.agregarRuta = async (req, res) => {
             await Log.create({
                 accion: 'Agregar Ruta',
                 detalle: `Intento fallido de agregar la ruta con destino a ${destino}. La ruta ya existe.`,
-                fecha: new Date()
+                fecha: new Date(),
+                usuario: usuario
             });
             return res.status(400).json({ error: 'Ya existe una ruta con ese destino' });
         }
@@ -20,14 +23,16 @@ exports.agregarRuta = async (req, res) => {
         await Log.create({
             accion: 'Agregar Ruta',
             detalle: `Se agregó una ruta con destino a ${destino} y precio ${precio}.`,
-            fecha: new Date()
+            fecha: new Date(),
+            usuario: usuario
         });
         res.status(201).json(nuevaRuta);
     } catch (error) {
         await Log.create({
             accion: 'Agregar Ruta',
             detalle: `Error al agregar ruta: ${error.message}`,
-            fecha: new Date()
+            fecha: new Date(),
+            usuario: usuario
         });
         res.status(500).json({ error: error.message });
     }

@@ -1,22 +1,23 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Ajusta la ruta según tu configuración
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('../config/database'); // Asegúrate de tener una conexión a tu base de datos configurada.
 
-const Log = sequelize.define('Log', {
-    accion: {
-        type: DataTypes.STRING,
-        allowNull: false
+class Log extends Model {}
+
+Log.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
     },
-    detalle: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    fecha: {
-        type: DataTypes.DATE,
-        allowNull: false
-    }
+    accion: DataTypes.STRING,
+    detalle: DataTypes.STRING,
+    fecha: DataTypes.DATE,
+    usuario: DataTypes.STRING
 }, {
+    sequelize,
+    modelName: 'Log',
+    tableName: 'logs',
     timestamps: false
 });
 
 module.exports = Log;
-
