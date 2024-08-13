@@ -37,25 +37,24 @@ exports.comprarBoleto = async (req, res) => {
     }
 };
 
-// Listar boletos por nombre de usuario
+// Listar boletos por token
 exports.listarBoletos = async (req, res) => {
-    const { usuario } = req.params;
-
     try {
+        const { usuario } = req.user;
         const usuarioEncontrado = await Usuario.findOne({ where: { usuario } });
         if (!usuarioEncontrado) return res.status(404).json({ error: 'Usuario no encontrado' });
 
         const ahora = moment().toDate();
 
+        // Buscar boletos asociados al usuario que no han expirado
         const boletos = await Boleto.findAll({
             where: {
-                matricula: usuarioEncontrado.usuario, 
+                matricula: usuarioEncontrado.usuario,
                 expiracion: {
-                    [Op.gt]: ahora 
+                    [Op.gt]: ahora
                 }
             }
         });
-
         res.status(200).json(boletos);
     } catch (error) {
         console.error('Error al listar boletos:', error);
@@ -63,6 +62,7 @@ exports.listarBoletos = async (req, res) => {
     }
 };
 
+//Ver saldo del alumno
 exports.verSaldo = async (req, res) => {
     try {
         const usuarioId = req.user.usuarioId;
