@@ -7,6 +7,19 @@ const bcrypt = require('bcryptjs');
 exports.registrarUsuario = async (req, res) => {
     try {
         const { usuario, pass, rol, saldo } = req.body;
+
+        // Verificar si el usuario ya existe
+        const usuarioExistente = await Usuario.findOne({ where: { usuario } });
+        if (usuarioExistente) {
+            await Log.create({
+                accion: 'Registrar Usuario',
+                detalle: `Intento fallido de registro. El usuario con nombre ${usuario} ya existe.`,
+                fecha: new Date()
+            });
+            return res.status(400).json({ error: 'El usuario ya existe' });
+        }
+
+        // Si no existe, proceder a registrarlo
         const nuevoUsuario = await Usuario.create({ usuario, pass, rol, saldo });
 
         await Log.create({
