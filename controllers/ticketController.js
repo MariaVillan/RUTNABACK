@@ -63,7 +63,7 @@ exports.listarBoletos = async (req, res) => {
     }
 };
 
-//Ver saldo del alumno
+//Ver saldo
 exports.verSaldo = async (req, res) => {
     try {
         const usuarioId = req.user.usuarioId;
@@ -77,46 +77,19 @@ exports.verSaldo = async (req, res) => {
     }
 };
 
-//Escanear boleto 
+// Escanear boletos
 exports.escanearBoleto = async (req, res) => {
     try {
         const { codigoQR } = req.body;
-        if (!codigoQR) return res.status(400).json({ error: 'Código QR es necesario' });
+        const boleto = await Boleto.findOne({ where: { codigoQR } });
+        if (!boleto) return res.status(404).json({ error: 'Boleto no encontrado' });
+        
+        if (boleto.expiracion < new Date()) {
+            return res.status(400).json({ error: 'Boleto expirado' });
+        }
 
-        // Verificar si el boleto existe y si ha expirado
-        const query = 'SELECT * FROM boletos WHERE codigo = ?';
-        db.query(query, [codigoQR], (err, results) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Error al consultar el boleto' });
-            }
-
-            if (results.length === 0) {
-                return res.status(404).json({ error: 'Boleto no encontrado' });
-            }
-
-            const boleto = results[0];
-            const fechaExpiracion = new Date(boleto.expiracion);
-
-            if (fechaExpiracion < new Date()) {
-                return res.status(400).json({ error: 'Boleto expirado' });
-            }
-
-            // Eliminar el boleto
-            const deleteQuery = 'DELETE FROM boletos WHERE codigo = ?';
-            db.query(deleteQuery, [codigoQR], (err, results) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ error: 'Error al eliminar el boleto' });
-                }
-
-                if (results.affectedRows === 0) {
-                    return res.status(404).json({ error: 'Boleto no encontrado' });
-                }
-
-                res.status(200).json({ mensaje: 'Boleto procesado exitosamente' });
-            });
-        });
+        await Boleto.destroy({ where: { codigoQR } });
+        res.json({ mensaje: 'Boleto procesado' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
