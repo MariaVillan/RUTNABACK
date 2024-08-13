@@ -63,12 +63,11 @@ exports.listarBoletos = async (req, res) => {
     }
 };
 
-// Ver saldo de usuario
 exports.verSaldo = async (req, res) => {
     try {
-        const usuario = req.user; 
+        const usuarioId = req.user.usuarioId;
 
-        const usuarioEncontrado = await Usuario.findOne({ where: { usuario } });
+        const usuarioEncontrado = await Usuario.findOne({ where: { id: usuarioId } });
         if (!usuarioEncontrado) return res.status(404).json({ error: 'Usuario no encontrado' });
 
         res.status(200).json({ saldo: usuarioEncontrado.saldo });
