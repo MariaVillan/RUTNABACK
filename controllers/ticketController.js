@@ -63,6 +63,20 @@ exports.listarBoletos = async (req, res) => {
     }
 };
 
+// Ver saldo de usuario
+exports.verSaldo = async (req, res) => {
+    try {
+        const { usuario } = req.params;
+
+        const usuarioEncontrado = await Usuario.findOne({ where: { usuario } });
+        if (!usuarioEncontrado) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+        res.status(200).json({ saldo: usuarioEncontrado.saldo });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 //Escanear boleto 
 exports.escanearBoleto = async (req, res) => {
     try {

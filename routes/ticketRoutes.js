@@ -6,5 +6,7 @@ const authenticateToken = require('../middleware/auth');
 router.post('/comprar', authenticateToken, ticketController.comprarBoleto);
 router.get('/listar/:usuario', authenticateToken, ticketController.listarBoletos);
 router.post('/escanear', authenticateToken, ticketController.escanearBoleto);
+router.get('/versaldo/:usuario', authenticateToken, ticketController.verSaldo);
+
 
 module.exports = router;
