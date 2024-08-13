@@ -117,34 +117,38 @@ exports.actualizarUsuario = async (req, res) => {
     }
 };
 
-// Eliminar usuario por nombre de usuario
+// Eliminar usuario por ID
 exports.eliminarUsuario = async (req, res) => {
     try {
-        const { usuario } = req.params;
-        const resultado = await Usuario.destroy({
-            where: { usuario }
-        });
+        const { id } = req.params; 
 
-        if (resultado === 0) {
+        const usuarioExistente = await Usuario.findOne({ where: { id } });
+        if (!usuarioExistente) {
             await Log.create({
                 accion: 'Eliminar Usuario',
-                detalle: `Usuario con nombre ${usuario} no encontrado.`,
+                detalle: `Usuario con ID ${id} no encontrado.`,
                 fecha: new Date()
             });
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
+        const resultado = await Usuario.destroy({
+            where: { id }
+        });
+
+        if (resultado === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+
         await Log.create({
             accion: 'Eliminar Usuario',
-            detalle: `Se eliminó el usuario con nombre ${usuario}.`,
+            detalle: `Se eliminó el usuario con ID ${id}.`,
             fecha: new Date()
         });
 
-        res.status(204).end();
+        res.status(204).end(); 
     } catch (error) {
         await Log.create({
             accion: 'Eliminar Usuario',
-            detalle: `Error al eliminar usuario con nombre ${usuario}: ${error.message}`,
+            detalle: `Error al eliminar usuario con ID ${id}: ${error.message}`,
             fecha: new Date()
         });
         res.status(500).json({ error: error.message });
