@@ -4,7 +4,7 @@ const ticketController = require('../controllers/ticketController');
 const authenticateToken = require('../middleware/auth');
 
 router.post('/comprar', authenticateToken, ticketController.comprarBoleto);
-router.get('/listar', authenticateToken, ticketController.listarBoletos);
+router.get('/listar/:usuario', authenticateToken, ticketController.listarBoletos);
 router.post('/escanear', authenticateToken, ticketController.escanearBoleto);
 router.get('/versaldo', authenticateToken, ticketController.verSaldo);
 
