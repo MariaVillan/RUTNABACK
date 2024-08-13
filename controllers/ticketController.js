@@ -37,16 +37,19 @@ exports.comprarBoleto = async (req, res) => {
     }
 };
 
-// Listar boletos por nombre de usuario
+// Listar boletos por el usuario obtenido del token
 exports.listarBoletos = async (req, res) => {
-    const { usuario } = req.params;
-
     try {
-        const usuarioEncontrado = await Usuario.findOne({ where: { usuario } });
+        // Obtener usuarioId desde el token decodificado
+        const usuarioId = req.user.usuarioId;
+
+        // Buscar el usuario por id
+        const usuarioEncontrado = await Usuario.findOne({ where: { id: usuarioId } });
         if (!usuarioEncontrado) return res.status(404).json({ error: 'Usuario no encontrado' });
 
         const ahora = moment().toDate();
 
+        // Obtener boletos asociados al usuario con el id
         const boletos = await Boleto.findAll({
             where: {
                 matricula: usuarioEncontrado.usuario, 
@@ -62,6 +65,7 @@ exports.listarBoletos = async (req, res) => {
         res.status(500).json({ mensaje: 'Error al listar boletos' });
     }
 };
+
 
 //Ver saldo
 exports.verSaldo = async (req, res) => {
