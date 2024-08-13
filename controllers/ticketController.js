@@ -40,10 +40,19 @@ exports.comprarBoleto = async (req, res) => {
 // Listar boletos por token
 exports.listarBoletos = async (req, res) => {
     try {
+        // Asegúrate de que req.user tenga el usuario correctamente
+        if (!req.user || !req.user.usuario) {
+            return res.status(400).json({ error: 'Usuario no está en el token' });
+        }
+
+        // Extraer el nombre de usuario del token
         const { usuario } = req.user;
+
+        // Buscar el usuario en la base de datos
         const usuarioEncontrado = await Usuario.findOne({ where: { usuario } });
         if (!usuarioEncontrado) return res.status(404).json({ error: 'Usuario no encontrado' });
 
+        // Obtener la fecha y hora actual
         const ahora = moment().toDate();
 
         // Buscar boletos asociados al usuario que no han expirado
@@ -55,6 +64,8 @@ exports.listarBoletos = async (req, res) => {
                 }
             }
         });
+
+        // Devolver los boletos encontrados
         res.status(200).json(boletos);
     } catch (error) {
         console.error('Error al listar boletos:', error);
