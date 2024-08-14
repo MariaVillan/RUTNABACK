@@ -66,8 +66,7 @@ exports.listarBoletos = async (req, res) => {
     }
 };
 
-
-//Ver saldo
+// Ver saldo
 exports.verSaldo = async (req, res) => {
     try {
         const usuarioId = req.user.usuarioId;
@@ -102,7 +101,6 @@ exports.buscarBoleto = async (req, res) => {
     }
 };
 
-
 // Escanear y procesar boleto
 exports.escanearBoleto = async (req, res) => {
     try {
@@ -122,5 +120,3 @@ exports.escanearBoleto = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-
