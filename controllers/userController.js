@@ -8,7 +8,6 @@ exports.registrarUsuario = async (req, res) => {
     try {
         const { usuario, pass, rol, saldo } = req.body;
 
-        // Verificar si el usuario ya existe
         const usuarioExistente = await Usuario.findOne({ where: { usuario } });
         if (usuarioExistente) {
             await Log.create({
@@ -19,7 +18,6 @@ exports.registrarUsuario = async (req, res) => {
             return res.status(400).json({ error: 'El usuario ya existe' });
         }
 
-        // Si no existe, proceder a registrarlo
         const nuevoUsuario = await Usuario.create({ usuario, pass, rol, saldo });
 
         await Log.create({
@@ -178,7 +176,7 @@ exports.login = async (req, res) => {
         }
         const token = jwt.sign({ usuarioId: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.json({ token, rol: user.rol }); // Incluye el rol en la respuesta
+        res.json({ token, rol: user.rol });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

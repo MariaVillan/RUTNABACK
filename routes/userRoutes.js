@@ -3,7 +3,6 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const authenticateToken = require('../middleware/auth');
 
-// Rutas de usuarios
 router.post('/registrarUsuario', userController.registrarUsuario);
 router.get('/obtenerAdmins', userController.obtenerAdmins);
 router.get('/obtenerAlumnos', userController.obtenerAlumnos);

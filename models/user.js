@@ -23,8 +23,8 @@ const Usuario = conexion.define('Usuarios', {
     },
     saldo: {
         type: Sequelize.DECIMAL(10, 2),
-        allowNull: true,  // Permitir que saldo sea null
-        defaultValue: 0.00  // Valor predeterminado
+        allowNull: true,  
+        defaultValue: 0.00  
     }
 });
 

@@ -1,5 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Asegúrate de tener una conexión a tu base de datos configurada.
+const sequelize = require('../config/database'); 
 
 class Log extends Model {}
 
