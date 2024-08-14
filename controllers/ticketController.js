@@ -81,20 +81,36 @@ exports.verSaldo = async (req, res) => {
     }
 };
 
-// Escanear boletos
-exports.escanearBoleto = async (req, res) => {
+// Buscar boleto
+exports.buscarBoleto = async (req, res, next) => {
     try {
         const { codigoQR } = req.body;
         const boleto = await Boleto.findOne({ where: { codigoQR } });
-        if (!boleto) return res.status(404).json({ error: 'Boleto no encontrado' });
         
+        if (!boleto) {
+            return res.status(404).json({ error: 'Boleto no encontrado' });
+        }
+
+        req.boleto = boleto;
+        next();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Escanear y procesar boleto
+exports.escanearBoleto = async (req, res) => {
+    try {
+        const boleto = req.boleto;
+
         if (boleto.expiracion < new Date()) {
             return res.status(400).json({ error: 'Boleto expirado' });
         }
 
-        await Boleto.destroy({ where: { codigoQR } });
+        await Boleto.destroy({ where: { codigoQR: boleto.codigoQR } });
         res.json({ mensaje: 'Boleto procesado' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
