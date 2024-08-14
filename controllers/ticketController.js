@@ -5,7 +5,6 @@ const QRCode = require('qrcode');
 const moment = require('moment');
 const { Op } = require('sequelize');
 
-// Comprar boleto
 exports.comprarBoleto = async (req, res) => {
     try {
         const { usuario, destino } = req.body;
@@ -29,6 +28,13 @@ exports.comprarBoleto = async (req, res) => {
             destino: ruta.destino, 
             codigoQR, 
             expiracion
+        });
+
+        // Registro en la tabla logs
+        await Log.create({
+            accion: 'Comprar boleto',
+            detalle: `El alumno con matricula ${usuarioEncontrado.matricula} compró un boleto para ${ruta.destino}`,
+            fecha: new Date(),
         });
 
         res.json(boleto);
