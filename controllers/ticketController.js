@@ -34,7 +34,7 @@ exports.comprarBoleto = async (req, res) => {
         // Registro en la tabla logs
         await Log.create({
             accion: 'Comprar boleto',
-            detalle: `El alumno con matricula ${usuarioEncontrado.matricula} compró un boleto para ${ruta.destino}`,
+            detalle: `El alumno con matricula ${usuarioEncontrado.usuario} compró un boleto para ${ruta.destino}`,
             fecha: new Date(),
         });
 
