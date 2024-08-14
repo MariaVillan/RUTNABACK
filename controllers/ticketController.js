@@ -66,7 +66,8 @@ exports.listarBoletos = async (req, res) => {
     }
 };
 
-// Ver saldo
+
+//Ver saldo
 exports.verSaldo = async (req, res) => {
     try {
         const usuarioId = req.user.usuarioId;
@@ -80,42 +81,19 @@ exports.verSaldo = async (req, res) => {
     }
 };
 
-// Buscar boleto
-exports.buscarBoleto = async (req, res) => {
-    try {
-        const { codigoQR } = req.body;
-        console.log("Código QR recibido:", codigoQR);
-        const boleto = await Boleto.findOne({ where: { codigoQR } });
-        
-        if (!boleto) {
-            return res.status(404).json({ error: 'Boleto no encontrado' });
-        }
-
-        // Devolver la información del boleto
-        res.status(200).json({
-            destino: boleto.destino,
-            expiracion: boleto.expiracion
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Escanear y procesar boleto
+// Escanear boletos
 exports.escanearBoleto = async (req, res) => {
     try {
         const { codigoQR } = req.body;
         const boleto = await Boleto.findOne({ where: { codigoQR } });
-
-        if (!boleto) {
-            return res.status(404).json({ error: 'Boleto no encontrado' });
-        }
+        if (!boleto) return res.status(404).json({ error: 'Boleto no encontrado' });
+        
         if (boleto.expiracion < new Date()) {
             return res.status(400).json({ error: 'Boleto expirado' });
         }
-        await Boleto.destroy({ where: { codigoQR } });
 
-        res.status(200).json({ mensaje: 'Boleto procesado' });
+        await Boleto.destroy({ where: { codigoQR } });
+        res.json({ mensaje: 'Boleto procesado' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
