@@ -82,9 +82,11 @@ exports.verSaldo = async (req, res) => {
 };
 
 // Buscar boleto
+// Buscar boleto
 exports.buscarBoleto = async (req, res, next) => {
     try {
         const { codigoQR } = req.body;
+        console.log("Código QR recibido:", codigoQR); // Verifica el valor recibido en el backend
         const boleto = await Boleto.findOne({ where: { codigoQR } });
         
         if (!boleto) {
