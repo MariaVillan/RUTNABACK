@@ -82,22 +82,26 @@ exports.verSaldo = async (req, res) => {
 };
 
 // Buscar boleto
-exports.buscarBoleto = async (req, res, next) => {
+exports.buscarBoleto = async (req, res) => {
     try {
         const { codigoQR } = req.body;
-        console.log("Código QR recibido:", codigoQR); // Verifica el valor recibido en el backend
+        console.log("Código QR recibido:", codigoQR);
         const boleto = await Boleto.findOne({ where: { codigoQR } });
         
         if (!boleto) {
             return res.status(404).json({ error: 'Boleto no encontrado' });
         }
 
-        req.boleto = boleto;
-        next();
+        // Devolver la información del boleto
+        res.status(200).json({
+            destino: boleto.destino,
+            expiracion: boleto.expiracion
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // Escanear y procesar boleto
 exports.escanearBoleto = async (req, res) => {
