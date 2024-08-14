@@ -82,7 +82,6 @@ exports.verSaldo = async (req, res) => {
 };
 
 // Buscar boleto
-// Buscar boleto
 exports.buscarBoleto = async (req, res, next) => {
     try {
         const { codigoQR } = req.body;
