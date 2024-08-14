@@ -4,6 +4,7 @@ const Boleto = require('../models/ticket');
 const QRCode = require('qrcode');
 const moment = require('moment');
 const { Op } = require('sequelize');
+const Log = require('../models/log');
 
 exports.comprarBoleto = async (req, res) => {
     try {
