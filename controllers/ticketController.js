@@ -106,16 +106,21 @@ exports.buscarBoleto = async (req, res) => {
 // Escanear y procesar boleto
 exports.escanearBoleto = async (req, res) => {
     try {
-        const boleto = req.boleto;
+        const { codigoQR } = req.body;
+        const boleto = await Boleto.findOne({ where: { codigoQR } });
 
+        if (!boleto) {
+            return res.status(404).json({ error: 'Boleto no encontrado' });
+        }
         if (boleto.expiracion < new Date()) {
             return res.status(400).json({ error: 'Boleto expirado' });
         }
+        await Boleto.destroy({ where: { codigoQR } });
 
-        await Boleto.destroy({ where: { codigoQR: boleto.codigoQR } });
-        res.json({ mensaje: 'Boleto procesado' });
+        res.status(200).json({ mensaje: 'Boleto procesado' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
